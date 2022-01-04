@@ -6,6 +6,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const isAuthenticated = require('./middlewares/auth');
 const isAuthenticatedAdmin = require('./middlewares/admin');
+
+//2021-2022---------------------------------------------------------
+const isAuthenticatedOrganiser = require('./middlewares/organiser');
+//--------------------------------------------------------------------
+
 const config = require('./config');
 
 const cors = require('cors');
@@ -48,7 +53,10 @@ app.get('/events', getEventNames);
 app.get('/events/categories', getCategories);
 app.get('/events/description', getEventDescription);
 app.get('/events/timeline', getEventTimeline);
-app.post('/events', isAuthenticated, addEvent);
+
+//for admins
+app.post('/events',isAuthenticated, addEvent);		//add isAuthenticatedOrganiser
+
 app.get('/user/event', isAuthenticated, getRegisteredEvents);
 app.put('/user/event', isAuthenticated, eventRegister);
 // for app registartion
@@ -58,18 +66,16 @@ app.put('/user/eventApp', appEventRegister, eventRegister);
 app.get('/facts', randomFact);
 app.get('/videos', video);
 app.post('/query', isAuthenticated, addQuery);
-app.put('/admin/query',isAuthenticated, removeQuery);
 app.get('/timestamp', getTimestamp);
 app.get('/timestamp/events', getNextEvents);
 
+app.put('/admin/query',isAuthenticated, removeQuery);
 app.get('/admin/event', isAuthenticated, getEventUsers);
 app.get('/admin/query', isAuthenticated, getQuery);
-
 app.post('/admin/notification',addNotification);
+
 app.get('/notification',getNotifications);
-
 app.get('/contacts', getContacts);
-
 app.get('/lectures', getLectures);
 
 // added later for Google Assistant
@@ -86,6 +92,9 @@ app.post('/sponsors', addSponsor);
 // app.post('/about', addDeveloper);
 app.get('/about', getDeveloper);
 app.get('/aboutAppDevs', getAppDevelopers);
+
+
+
 
 // updated user info
 // app.get('/updateUsers', updateUsers);
@@ -511,6 +520,7 @@ function eventRegister(request, response)
 	let eventName = request.body.eventName;
 	let eventCategory = request.body.eventCategory;
 	let email = request.body.email;
+	console.log(eventName+ " "+ eventCategory);
 
 	if(eventName === undefined || eventCategory === undefined) {
 
